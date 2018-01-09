@@ -91,7 +91,7 @@ namespace RungeKutta {
 #pragma endregion
 	private: System::Void drawButton_Click(System::Object^  sender, System::EventArgs^  e) {
 		Color^ col = gcnew Color();
-		Pen^ pen = gcnew Pen(col->Red);
+		Pen^ pen = gcnew Pen(col->Blue);
 		Graphics^ im = plotPanel->CreateGraphics();
 		int width = plotPanel->Width;
 		int height = plotPanel->Height;
