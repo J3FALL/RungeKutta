@@ -97,8 +97,7 @@ namespace RungeKutta {
 		int height = plotPanel->Height;
 		drawAxes(im);
 
-		RungeKuttaParams^ params = gcnew RungeKuttaParams(2, 3.14, 2, 2, 0.01, 0.1);
-		solve(params);
+		solve();
 
 		for (int i = 0; i < xvec.size() - 1; i++) {
 			// Create points that define line.
