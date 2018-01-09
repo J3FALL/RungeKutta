@@ -227,7 +227,13 @@ namespace RungeKutta {
 		epsilon = Convert::ToDouble(epsTextBox->Text);
 		tau = Convert::ToDouble(tauTextBox->Text);
 
-		solve();
+		std::pair<std::vector<double>, std::vector<double>> slnvec;
+		std::vector<double> xvec;
+		std::vector<double> yvec;
+
+		slnvec = solve(0, 0, T_terminal, tau);
+		xvec = slnvec.first;
+		yvec = slnvec.second;
 
 		for (int i = 0; i < xvec.size() - 1; i++) {
 			// Create points that define line.

@@ -58,18 +58,23 @@ std::pair<double, double> getNextStep(
 	return std::make_pair(xrk, yrk);
 }
 
-void generate_delay(double T, double tau) {
+void generate_delay(double x0, double y0, double T, double tau) {
 	for (double delay = -T; delay < 0; delay += tau) {
 		xd.push_back(0);//TODO:Add random here(?)
 		yd.push_back(0);//TODO:Add random here(?)
 	}
+	xd.push_back(x0);
+	yd.push_back(y0);
 }
 
-void solve() {
-	xvec.clear();
-	yvec.clear();
+std::pair<std::vector<double>, std::vector<double>> solve(double x0, double y0, double T_terminal, double tau) {
+	std::vector<double> xvec;
+	std::vector<double> yvec;
+	std::pair<std::vector<double>, std::vector<double>> slnvec;
+	xd.clear();
+	yd.clear();
 
-	generate_delay(T, tau);
+	generate_delay(x0, y0, T, tau);
 
 	xvec.push_back(xd[xd.size() - 1]);//Here we want to add 'real' initial conditions without delay,i.e. the last element of delayed vector
 	yvec.push_back(yd[yd.size() - 1]);
@@ -79,8 +84,10 @@ void solve() {
 			xd[xd.size() - 1 - 7], yd[yd.size() - 1 - 7], time);
 		xvec.push_back(nextStep.first);
 		yvec.push_back(nextStep.second);
-
-		xd.push_back(xvec[xvec.size() - 1]);//TODO:Add random here(?)
-		yd.push_back(yvec[xvec.size() - 1]);//TODO:Add random here(?)
+		xd.push_back(xvec[xvec.size() - 1]);
+		yd.push_back(yvec[xvec.size() - 1]);
 	}
+	slnvec.first = xvec;
+	slnvec.second = yvec;
+	return slnvec;
 }
