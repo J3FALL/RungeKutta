@@ -1,4 +1,5 @@
 #pragma once
+#include "RK4.h"
 
 namespace RungeKutta {
 
@@ -95,6 +96,17 @@ namespace RungeKutta {
 		int width = plotPanel->Width;
 		int height = plotPanel->Height;
 		drawAxes(im);
+
+		RungeKuttaParams^ params = gcnew RungeKuttaParams(2, 3.14, 2, 2, 0.01, 0.1);
+		solve(params);
+
+		for (int i = 0; i < xvec.size() - 1; i++) {
+			// Create points that define line.
+			Point point1 = Point(50 * xvec[i] + (plotPanel->Width) / 2, 50 * yvec[i] + (plotPanel->Height) / 2);
+			Point point2 = Point(50 * xvec[i + 1] + (plotPanel->Width) / 2, 50 * yvec[i + 1] + (plotPanel->Height) / 2);
+			Graphics^ im = plotPanel->CreateGraphics();
+			im->DrawLine(pen, point1, point2);
+		}
 	}
 
 	private: void drawAxes(Graphics^ im) {
@@ -108,9 +120,6 @@ namespace RungeKutta {
 		im->DrawLine(pen, 0, height / 2, width, height / 2);
 	}
 	
-	private: void drawPlotByPoints(Graphics^ im, double x[], double y[]) {
-
-	}
 
 	};
 }
