@@ -376,6 +376,7 @@ namespace RungeKutta {
 		int height = plotPanel->Height;
 		drawAxes(im);
 
+		//Reading data from form
 		A = Convert::ToDouble(aTextBox->Text);
 		T = Convert::ToDouble(TTextBox->Text);
 		T_terminal = Convert::ToDouble(TTermBox->Text);
@@ -385,11 +386,12 @@ namespace RungeKutta {
 		std::pair<std::vector<double>, std::vector<double>> slnvec;
 		std::vector<double> xvec;
 		std::vector<double> yvec;
-
+		//Performing RK
 		slnvec = solve(0, 0,0,T_terminal, tau);
+		//Splitting coordinates
 		xvec = slnvec.first;
 		yvec = slnvec.second;
-
+		//Since its 2d problem we draw only phase (x(t),y(t)) space 
 		for (int i = 0; i < xvec.size() - 1; i++) {
 			// Create points that define line.
 			Point point1 = Point(20 * xvec[i] + (plotPanel->Width) / 2, -5 * yvec[i] + (plotPanel->Height) / 2);
@@ -418,6 +420,7 @@ private: System::Void radioButton1_CheckedChanged(System::Object^  sender, Syste
 private: System::Void radioButton2_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
 }
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+		//Here we want to find coordinatewise difference between 'pure' unbiased conditions and biased ones 
 		std::pair<std::vector<double>, std::vector<double>> slnvec0;
 		std::pair<std::vector<double>, std::vector<double>> slnvec1;
 		std::vector<double> xvec0, xvec1, yvec0, yvec1;
@@ -425,12 +428,15 @@ private: System::Void radioButton2_CheckedChanged(System::Object^  sender, Syste
 		Pen^ pen = gcnew Pen(col->Blue);
 		Graphics^ im = plotPanel->CreateGraphics();
 		im->Clear(Color::White);
+		//Perform RK for pure BC
 		slnvec0 = solve(0, 0,0, T_terminal, tau);
+		//For biased BC
 		slnvec1 = solve(0.01, 0.01,0, T_terminal, tau);
 		xvec0 = slnvec0.first;
 		yvec0 = slnvec0.second;
 		xvec1 = slnvec1.first;
 		yvec1 = slnvec1.second;
+		//If x-component selected draw x difference
 		if (radioButton1->Checked == true) {
 			for (int i = 1; i < xvec0.size()-2; i++) {
 				// Create points that define line.
@@ -441,6 +447,7 @@ private: System::Void radioButton2_CheckedChanged(System::Object^  sender, Syste
 			
 		}
 		else {
+			//Else y-component selected draw y difference
 			for (int i = 1; i < yvec0.size() - 2; i++) {
 				// Create points that define line.
 				Point point1 = Point(8 * tau*i, -5000 * (yvec0[i] - yvec1[i]) + (plotPanel->Height) / 2);
@@ -456,6 +463,7 @@ private: System::Void TTermBox_TextChanged(System::Object^  sender, System::Even
 	}
 }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+	//Here we build Poincare cross-sections as x(t) with y=const and y(t) as x=const
 	double xconst = 1;
 	double yconst = 1;
 	double eps = 0.1; //Serves only for double comparison, i.e. we need something like x=const, but use abs(x-const)<eps
@@ -482,7 +490,7 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 				poincare_x.push_back(i);
 			}
 		}
-		//ONLY for graphical purposes we divide all numbers on two groups with positive and negative y (for const y)
+		//ONLY for graphical purposes we divide all numbers on two groups with positive and negative x (for const y)
 		for (int i = 1; i < poincare_x.size(); i++) {
 			if (yvec0[poincare_x[i]]>=0) {
 				//Here we store positive ones
@@ -555,6 +563,8 @@ private: System::Void tauTextBox_TextChanged(System::Object^  sender, System::Ev
 	}
 }
 private: System::Void button3_Click(System::Object^  sender, System::EventArgs^  e) {
+	//For autocorr function we use rectangle integrations scheme, with precision O(h^2), first, it is relativelly fast
+	//Second, we don't need actually more precise scheme for auto-corr
 	double acor_x1,acor_x2,acor_y1,acor_y2 = 0;
 	std::pair<std::vector<double>, std::vector<double>> slnvec0;
 	std::vector<double> xvec0, yvec0;
@@ -565,6 +575,7 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 	Pen^ pen = gcnew Pen(col->Blue);
 	Graphics^ im = plotPanel->CreateGraphics();
 	im->Clear(Color::White);
+	//x-component correlation, if x-comp selected
 	if (radioButton1->Checked == true) {
 		for (int j = 1; j < T_terminal / tau - 1; j++) {
 			acor_x1 = 0;
@@ -579,6 +590,7 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 		}
 	}
 	else {
+		//y-component correlation, if y-comp selected
 		for (int j = 1; j < T_terminal / tau - 1; j++) {
 			acor_y1 = 0;
 			acor_y2 = 0;
@@ -593,11 +605,14 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 	}
 }
 private: System::Void button4_Click(System::Object^  sender, System::EventArgs^  e) {
+	//Lyapunov's higher-order exponent from Application L
 	double l1_exp,x0,y0;
 	std::pair<std::vector<double>, std::vector<double>> slnvec0;
+	//Perform RK for long time, for initial approximation (x0,y0);
 	slnvec0 = solve(0, 0, 0, 100, 0.01);
 	x0 = slnvec0.first[slnvec0.first.size() - 1];
 	y0 = slnvec0.second[slnvec0.first.size() - 1];
+	//Then using algorithm from Application L (see RK4.h)
 	l1_exp = Lyapunov_exp(x0, y0, M_L, T_L);
 	label6->Text = "L1=" + Convert::ToString(l1_exp);
 }
