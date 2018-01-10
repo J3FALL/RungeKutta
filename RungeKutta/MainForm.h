@@ -191,7 +191,7 @@ namespace RungeKutta {
 			this->epsTextBox->Name = L"epsTextBox";
 			this->epsTextBox->Size = System::Drawing::Size(76, 20);
 			this->epsTextBox->TabIndex = 9;
-			this->epsTextBox->Text = L"0.01";
+			this->epsTextBox->Text = Convert::ToString(0.01);
 			// 
 			// label4
 			// 
@@ -210,7 +210,7 @@ namespace RungeKutta {
 			this->tauTextBox->Name = L"tauTextBox";
 			this->tauTextBox->Size = System::Drawing::Size(76, 20);
 			this->tauTextBox->TabIndex = 11;
-			this->tauTextBox->Text = L"0.01";
+			this->tauTextBox->Text = Convert::ToString(0.01);
 			this->tauTextBox->TextChanged += gcnew System::EventHandler(this, &MainForm::tauTextBox_TextChanged);
 			// 
 			// label5
