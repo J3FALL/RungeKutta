@@ -1,6 +1,6 @@
 #pragma once
 #include "RK4.h"
-
+#include <string>
 namespace RungeKutta {
 
 	using namespace System;
@@ -381,7 +381,7 @@ namespace RungeKutta {
 
 		int width = plotPanel->Width;
 		int height = plotPanel->Height;
-		drawAxes(im);
+		drawAxes(im, 20, 20, "x", "y");
 
 		//Reading data from form
 		A = Convert::ToDouble(aTextBox->Text);
@@ -408,18 +408,53 @@ namespace RungeKutta {
 		}
 	}
 
-	private: void drawAxes(Graphics^ im) {
+	private: void drawAxes(Graphics^ im, double scaleX, double scaleY, char* nameX, char* nameY) {
 		int width = plotPanel->Width;
 		int height = plotPanel->Height;
 
 		Color^ col = gcnew Color();
 		Pen^ pen = gcnew Pen(col->Red);
 
-		double xCenter = width / 2;
-		double yCenter = height / 2;
-		im->DrawLine(pen, xCenter, 0, xCenter, height);
-		im->DrawLine(pen, 0, yCenter, width, yCenter);
+		int xCenter = width / 2;
+		int yCenter = height / 2;
 
+		Pen^ scalePen = gcnew Pen(col->Black);
+		System::Drawing::Font^ font = gcnew System::Drawing::Font("Arial", 10);
+		SolidBrush^ brush = gcnew SolidBrush(Color::Black);
+		
+		for (int idx = 0; idx < width / 2; idx += 50) {
+			im->DrawLine(scalePen, idx + width / 2, yCenter - 5, idx + width / 2, yCenter + 5);
+			im->DrawLine(scalePen, width / 2 - idx, yCenter - 5, width / 2 - idx, yCenter + 5);
+			if (nameX != "t") {
+				PointF textPointPlus = PointF(idx + width / 2 - 5, yCenter - 25);
+				PointF textPointMinus = PointF(width / 2 - idx - 5, yCenter - 25);
+				im->DrawString(Convert::ToString(1.0 * idx / scaleX), font, brush, textPointPlus);
+				im->DrawString(Convert::ToString((-1.0) * idx / scaleX), font, brush, textPointMinus);
+			}
+			else {
+				PointF textPointPlus = PointF(idx + width / 2 - 5, yCenter - 25);
+				PointF textPointMinus = PointF(width / 2 - idx - 5, yCenter - 25);
+				im->DrawString(Convert::ToString((1.0 * idx + width / 2) / scaleX), font, brush, textPointPlus);
+				im->DrawString(Convert::ToString((((-1.0) * idx) + width / 2) / scaleX), font, brush, textPointMinus);
+			}
+			
+		}
+		
+		for (int idx = 0; idx < height / 2; idx += 50) {
+			im->DrawLine(scalePen, xCenter - 5, idx + height / 2, xCenter + 5, idx + height / 2);
+			im->DrawLine(scalePen, xCenter - 5, height / 2 - idx, xCenter + 5, height / 2 - idx);
+			PointF textPointMinus = PointF(xCenter - 50, idx + height / 2 - 5);
+			PointF textPointPlus = PointF(xCenter - 50, height / 2 - idx - 5);
+			im->DrawString(Convert::ToString(1.0 * idx / scaleY), font, brush, textPointPlus);
+			im->DrawString(Convert::ToString((-1.0) * idx / scaleY), font, brush, textPointMinus);
+		}
+
+		im->DrawLine(pen, xCenter, 0, xCenter, height);
+		PointF nameXPoint = PointF(width - 50, yCenter + 15);
+		PointF nameYPoint = PointF(width / 2 + 15, 15);
+		im->DrawString(gcnew String(nameX), font, brush, nameXPoint);
+		im->DrawLine(pen, 0, yCenter, width, yCenter);
+		im->DrawString(gcnew String(nameY), font, brush, nameYPoint);
 
 	}
 	
@@ -449,6 +484,7 @@ private: System::Void radioButton2_CheckedChanged(System::Object^  sender, Syste
 		yvec1 = slnvec1.second;
 		//If x-component selected draw x difference
 		if (radioButton1->Checked == true) {
+			drawAxes(im, 8, 5000, "t", "x");
 			for (int i = 1; i < xvec0.size()-2; i++) {
 				// Create points that define line.
 				Point point1 = Point( 8*tau*i,  -5000 * (xvec0[i]-xvec1[i]) + (plotPanel->Height) / 2);
@@ -459,6 +495,7 @@ private: System::Void radioButton2_CheckedChanged(System::Object^  sender, Syste
 		}
 		else {
 			//Else y-component selected draw y difference
+			drawAxes(im, 8, 5000, "t", "y");
 			for (int i = 1; i < yvec0.size() - 2; i++) {
 				// Create points that define line.
 				Point point1 = Point(8 * tau*i, -5000 * (yvec0[i] - yvec1[i]) + (plotPanel->Height) / 2);
@@ -494,6 +531,7 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 	im->DrawLine(pen, point1, point2);
 	//For x=const
 	if (radioButton1->Checked == true) {
+		drawAxes(im, 20, 5, "t", "y");
 		for (int i = 1; i < xvec0.size() - 2; i++) {
 			//See comment for eps above
 			if (abs(xvec0[i] - xconst) < eps) {
@@ -531,6 +569,7 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 		}
 	}
 	else { //Now we do the same, but for y=const
+		drawAxes(im, 20, 5, "t", "x");
 		for (int i = 1; i < yvec0.size() - 2; i++) {
 			//See comment for eps above
 			if (abs(yvec0[i] - yconst) < eps) {
@@ -588,6 +627,7 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 	im->Clear(Color::White);
 	//x-component correlation, if x-comp selected
 	if (radioButton1->Checked == true) {
+		drawAxes(im, 10, 0.005, "t", "R_x");
 		for (int j = 1; j < T_terminal / tau - 1; j++) {
 			acor_x1 = 0;
 			acor_x2 = 0;
@@ -602,6 +642,7 @@ private: System::Void button3_Click(System::Object^  sender, System::EventArgs^ 
 	}
 	else {
 		//y-component correlation, if y-comp selected
+		drawAxes(im, 10, 0.005, "t", "R_y");
 		for (int j = 1; j < T_terminal / tau - 1; j++) {
 			acor_y1 = 0;
 			acor_y2 = 0;
