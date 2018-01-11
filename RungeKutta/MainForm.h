@@ -193,7 +193,7 @@ namespace RungeKutta {
 			this->epsTextBox->Name = L"epsTextBox";
 			this->epsTextBox->Size = System::Drawing::Size(76, 20);
 			this->epsTextBox->TabIndex = 9;
-			this->epsTextBox->Text = Convert::ToString(0.01);
+			this->epsTextBox->Text = L"0.01";
 			this->epsTextBox->TextChanged += gcnew System::EventHandler(this, &MainForm::epsTextBox_TextChanged);
 			// 
 			// label4
@@ -213,7 +213,7 @@ namespace RungeKutta {
 			this->tauTextBox->Name = L"tauTextBox";
 			this->tauTextBox->Size = System::Drawing::Size(76, 20);
 			this->tauTextBox->TabIndex = 11;
-			this->tauTextBox->Text = Convert::ToString(0.01);
+			this->tauTextBox->Text = L"0.01";
 			this->tauTextBox->TextChanged += gcnew System::EventHandler(this, &MainForm::tauTextBox_TextChanged);
 			// 
 			// label5
@@ -306,6 +306,7 @@ namespace RungeKutta {
 			this->textBox1->Size = System::Drawing::Size(76, 20);
 			this->textBox1->TabIndex = 19;
 			this->textBox1->Text = L"200";
+			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MainForm::textBox1_TextChanged);
 			// 
 			// textBox2
 			// 
@@ -314,6 +315,7 @@ namespace RungeKutta {
 			this->textBox2->Size = System::Drawing::Size(76, 20);
 			this->textBox2->TabIndex = 20;
 			this->textBox2->Text = L"2";
+			this->textBox2->TextChanged += gcnew System::EventHandler(this, &MainForm::textBox2_TextChanged);
 			// 
 			// label7
 			// 
@@ -364,6 +366,7 @@ namespace RungeKutta {
 			this->Margin = System::Windows::Forms::Padding(2);
 			this->Name = L"MainForm";
 			this->Text = L"MainForm";
+			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -679,6 +682,20 @@ private: System::Void TTextBox_TextChanged(System::Object^  sender, System::Even
 		T = Convert::ToDouble(TTextBox->Text);
 	}
 	N = omega * T / (2 * M_PI);
+}
+private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+	if (textBox1->Text != "") {
+		M_L = Convert::ToDouble(textBox1->Text);
+	}
+}
+private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e) {
+	epsTextBox->Text = Convert::ToString(0.01);
+	tauTextBox->Text = Convert::ToString(0.01);
+}
+private: System::Void textBox2_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+	if (textBox2->Text != "") {
+		T_L = Convert::ToDouble(textBox2->Text);
+	}
 }
 };
 }
